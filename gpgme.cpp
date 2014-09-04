@@ -35,7 +35,10 @@ void bail(gpgme_error_t err, const char * msg){
     throw(buff);
     }
 }
-
+void str_to_data(gpgme_data_t *data, const char* string){
+  bail(gpgme_data_new_from_mem(data, string, strlen(string), 1),
+       "in-memory data buffer creation"); 
+}
 char *
 print_data (gpgme_data_t dh)
 {
