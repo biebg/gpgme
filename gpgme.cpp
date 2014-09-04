@@ -35,16 +35,6 @@ void bail(gpgme_error_t err, const char * msg){
     }
 }
 
-static const char *
-nonnull (const char *s)
-{
-  return s? s :"[none]";
-}
-void str_to_data(gpgme_data_t *data, const char* string){
-  bail(gpgme_data_new_from_mem(data, string, strlen(string), 1),
-       "in-memory data buffer creation"); 
-}
-
 char *
 print_data (gpgme_data_t dh)
 {
