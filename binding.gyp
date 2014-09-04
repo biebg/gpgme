@@ -13,7 +13,8 @@
           ],
 	 "link_settings": {
                 "libraries": [
-                    "/usr//local/lib/libgpgme.dylib"
+                    "/usr//local/lib/libgpgme.dylib",
+                    "/usr/lib/libgpgme.so"
                 ],
             }
   }]
