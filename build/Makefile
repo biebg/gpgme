@@ -334,7 +334,7 @@ ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
 endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
-cmd_regen_makefile = cd $(srcdir); /usr/local/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/Users/yuansc/gpgme_addons/build/config.gypi -I/usr/local/lib/node_modules/node-gyp/addon.gypi -I/Users/yuansc/.node-gyp/0.10.30/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/Users/yuansc/.node-gyp/0.10.30" "-Dmodule_root_dir=/Users/yuansc/gpgme_addons" binding.gyp
+cmd_regen_makefile = cd $(srcdir); /usr/local/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/Users/yuansc/gpgme/build/config.gypi -I/usr/local/lib/node_modules/node-gyp/addon.gypi -I/Users/yuansc/.node-gyp/0.10.30/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/Users/yuansc/.node-gyp/0.10.30" "-Dmodule_root_dir=/Users/yuansc/gpgme" binding.gyp
 Makefile: $(srcdir)/../.node-gyp/0.10.30/common.gypi $(srcdir)/../../../usr/local/lib/node_modules/node-gyp/addon.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp
 	$(call do_cmd,regen_makefile)
 
