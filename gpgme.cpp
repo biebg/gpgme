@@ -39,6 +39,7 @@ void str_to_data(gpgme_data_t *data, const char* string){
   bail(gpgme_data_new_from_mem(data, string, strlen(string), 1),
        "in-memory data buffer creation"); 
 }
+
 char *
 print_data (gpgme_data_t dh)
 {
@@ -202,6 +203,7 @@ Handle<Value> Sign(const Arguments& args) {
   HandleScope scope;
   gpgme_error_t err;
   gpgme_key_t key;
+  gpgme_keylist_result_t result;
   gpgme_key_t keyarray[100];
   int keyidx = 0;
   gpgme_data_t out;
