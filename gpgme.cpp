@@ -200,10 +200,8 @@ Handle<Value> Sign(const Arguments& args) {
 
  Handle<Value> Export(const Arguments& args) {
   HandleScope scope;
-  int last_argc = -1;
   gpgme_error_t err;
   gpgme_key_t key;
-  gpgme_keylist_result_t result;
   gpgme_key_t keyarray[100];
   int keyidx = 0;
   gpgme_data_t out;
