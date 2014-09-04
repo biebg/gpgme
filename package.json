@@ -1,0 +1,21 @@
+{
+  "name": "gpgme_addons",
+  "version": "0.0.0",
+  "description": "",
+  "main": "gpgme.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/buctyoyo/gpgme_addons.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/buctyoyo/gpgme_addons/issues"
+  },
+  "homepage": "https://github.com/buctyoyo/gpgme_addons"
+}
