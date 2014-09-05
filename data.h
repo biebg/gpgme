@@ -30,7 +30,7 @@
 #endif
 #include <limits.h>
 
-#include "gpgme.h"
+#include <gpgme.h>
 
 
 /* Read up to SIZE bytes into buffer BUFFER from the data object with
