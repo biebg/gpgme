@@ -302,10 +302,7 @@ Handle<Value> Sign(const Arguments& args) {
 
  Handle<Value> isSigned(const Arguments& args) {
   HandleScope scope;
-  gpgme_key_t keyarray[10000];
-  gpgme_keylist_result_t result;
   gpgme_key_t key;
-  int keyidx = 0;
 
 
   if (!args[0]->IsString())
@@ -330,10 +327,8 @@ Handle<Value> Sign(const Arguments& args) {
     while (!(gpgme_op_keylist_next (ctx, &key)))
     {
       gpgme_user_id_t uid;
-      gpgme_subkey_t subkey;
       int nuids;
       gpgme_key_sig_t signature;
-      int i;
       // keyarray[keyidx++] = key;
       if(key->subkeys) {
         if(strcmp(key->subkeys->fpr, *fpr) == 0) {
