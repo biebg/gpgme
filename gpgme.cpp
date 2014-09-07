@@ -40,6 +40,12 @@ void str_to_data(gpgme_data_t *data, const char* string){
        "in-memory data buffer creation"); 
 }
 
+static const char *
+nonnull (const char *s)
+{
+  return s? s :"[none]";
+}
+
 char *
 print_data (gpgme_data_t dh)
 {
@@ -104,24 +110,24 @@ Handle<Value> Verify(const Arguments& args) {
     bail(gpgme_op_verify(ctx, SIG, DATA, NULL), "verification");
     result = gpgme_op_verify_result(ctx);
     sig = result->signatures;
-    printf("sign%s\n", sig->fpr);
     if(sig->status == GPG_ERR_NO_ERROR) {
+
       const unsigned argc = 2;
       Local<Value> argv[argc] = {
             Local<Value>::New(Null()),
-            Local<Value>::New(True())
-    };
+            Local<Value>::New(String::New(sig->fpr))
+      };
         // 异步回调执行 callback    
-    callback->Call(Context::GetCurrent()->Global(), argc, argv);
+      callback->Call(Context::GetCurrent()->Global(), argc, argv);
     }
     else {
       const unsigned argc = 2;
       Local<Value> argv[argc] = {
             Local<Value>::New(Null()),
             Local<Value>::New(False())
-    };
+      };
         // 异步回调执行 callback    
-    callback->Call(Context::GetCurrent()->Global(), argc, argv);
+      callback->Call(Context::GetCurrent()->Global(), argc, argv);
     }                               
   } catch(const char* s) {
     Local<Value> err = Exception::Error(String::New(s));
@@ -222,13 +228,14 @@ Handle<Value> Sign(const Arguments& args) {
     Local<Function> callback = Local<Function>::Cast(args[1]);
 
   try {
+    bail(gpgme_set_keylist_mode(ctx,4), "set mode");
     bail(gpgme_op_keylist_start (ctx, NULL,0), "op KeyList start");
     while (!(err = gpgme_op_keylist_next(ctx, &key))){
        // printf("userId:%s\n", key->uids->uid);
        // printf ("keyid: %s  (fpr: %s)\n",
-       //          key->subkeys?  nonnull(key->subkeys->keyid):"?",
-       //          key->subkeys?nonnull (key->subkeys->fpr):"?");
-       if(strcmp(key->subkeys->fpr,*fpr)==0) {
+                // key->subkeys?  nonnull(key->subkeys->keyid):"?",
+                // key->subkeys?nonnull (key->subkeys->fpr):"?");
+       if(strcmp(key->subkeys->fpr,*fpr)==0 || strcmp(key->subkeys->keyid,*fpr)==0) {
         // printf("SUCCESS\n%s\n%s\n","SUCCESS","SUCCESS");
         keyarray[keyidx++] = key;
        }
@@ -293,6 +300,92 @@ Handle<Value> Sign(const Arguments& args) {
   return Undefined();
  }
 
+ Handle<Value> isSigned(const Arguments& args) {
+  HandleScope scope;
+  gpgme_key_t keyarray[10000];
+  gpgme_keylist_result_t result;
+  gpgme_key_t key;
+  int keyidx = 0;
+
+
+  if (!args[0]->IsString())
+          return ThrowException(Exception::TypeError(String::New("First argument can't be empty")));
+    String::Utf8Value fpr(args[0]->ToString());
+
+  if (!args[1]->IsFunction()) {
+          return ThrowException(Exception::TypeError(String::New("Second argument must be a callback function")));
+  }
+
+  if (!args[1]->IsFunction()) {
+          return ThrowException(Exception::TypeError(String::New("Second argument must be a callback function")));
+  }
+  Local<Function> callback = Local<Function>::Cast(args[1]);
+
+  try{
+    bail(gpgme_set_keylist_mode(ctx,4), "set");
+    bail(gpgme_op_keylist_start(ctx, NULL, 0), "searching keys");
+   int signers=0;
+   char *tempSigner[10000];
+   // String signerArray[10000];
+    while (!(gpgme_op_keylist_next (ctx, &key)))
+    {
+      gpgme_user_id_t uid;
+      gpgme_subkey_t subkey;
+      int nuids;
+      gpgme_key_sig_t signature;
+      int i;
+      // keyarray[keyidx++] = key;
+      if(key->subkeys) {
+        if(strcmp(key->subkeys->fpr, *fpr) == 0) {
+          for (nuids=0, uid=key->uids; uid; uid = uid->next, nuids++)
+          {
+           int j=0;
+           for(j=0,signature = uid->signatures; signature; signature=signature->next,j++) {
+               printf("signatures%s\n",signature?nonnull (signature->name):"?");
+                if(signature->keyid) {
+                  tempSigner[signers] = signature->keyid;
+                  // printf("id============>%s\n", signature->keyid);
+                  // printf("name==========>%s\n", signature->name);
+                  // signerArray[signers] = (signature->keyid).c_str();
+                  signers++;
+            }
+            }
+          }
+        }
+      }
+   }
+  char *resultSigner[signers];
+  memcpy(resultSigner, tempSigner, signers+1);
+  Handle<v8::Array> signerArr = v8::Array::New(signers);
+  for(int h=0;h<signers;h++) {
+     signerArr->Set(h, v8::String::New(tempSigner[h]));
+     printf("temp%s\n", tempSigner[h]);
+  }
+  
+
+  bail(gpgme_op_keylist_end(ctx), "done listing keys");
+     const unsigned argc = 2;
+    Local<Value> argv[argc] = {
+            Local<Value>::New(Null()),
+            Local<Value>::New(signerArr)
+    };
+        // 异步回调执行 callback    
+    callback->Call(Context::GetCurrent()->Global(), argc, argv);
+  }catch(const char* s) {
+        Local<Value> err = Exception::Error(String::New(s));
+        err->ToObject()->Set(NODE_PSYMBOL("errno"), Integer::New(00));
+        // 定义回调函数的参数个数和参数数组
+        const unsigned argc = 1;
+        Local<Value> argv[argc] = { err };
+        // 异步回调执行 callback            
+        callback->Call(Context::GetCurrent()->Global(), argc, argv);
+  }
+  return Undefined();
+    
+}
+
+
+
 void InitAll(Handle<Object> exports) {
 	 init_gpgme();
   bail(gpgme_new(&ctx), "context creation");
@@ -303,6 +396,8 @@ void InitAll(Handle<Object> exports) {
     FunctionTemplate::New(Sign)->GetFunction());
   exports->Set(String::NewSymbol("Export"),
     FunctionTemplate::New(Export)->GetFunction());
+  exports->Set(String::NewSymbol("isSigned"),
+    FunctionTemplate::New(isSigned)->GetFunction());
 }
 
 
