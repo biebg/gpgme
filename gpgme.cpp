@@ -13,8 +13,8 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <gpg-error.h>
 #include <gpgme.h>
-#include <stdio.h>
 #include <cstring> 
 
 using namespace v8;
