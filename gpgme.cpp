@@ -312,9 +312,6 @@ Handle<Value> Sign(const Arguments& args) {
           return ThrowException(Exception::TypeError(String::New("Second argument must be a callback function")));
   }
 
-  if (!args[1]->IsFunction()) {
-          return ThrowException(Exception::TypeError(String::New("Second argument must be a callback function")));
-  }
   Local<Function> callback = Local<Function>::Cast(args[1]);
   
 
