@@ -150,14 +150,14 @@ Handle<Value> Sign(const Arguments& args) {
   size_t amt;
 
     if (args.Length() != 3)
-          return String::New("sign takes two arguments");
+      return ThrowException(Exception::TypeError(String::New("sign takes two arguments")));
 
     if (!args[0]->IsString())
-        return String::New("First argument must be a string indicating the signer");
+      return ThrowException(Exception::TypeError(String::New("First argument must be a string indicating the signer")));
     String::Utf8Value pattern(args[0]->ToString());
 
     if (!args[1]->IsString())
-      return String::New("Second argument must be a string of the data to sign");
+        return ThrowException(Exception::TypeError(String::New("Second argument must be a string of the data to sign")));
     String::Utf8Value plain(args[1]->ToString());
     str_to_data(&PLAIN, *plain);
 
@@ -304,8 +304,7 @@ Handle<Value> Sign(const Arguments& args) {
   HandleScope scope;
   gpgme_key_t key;
 
-
-  if (!args[0]->IsString())
+ if (!args[0]->IsString())
           return ThrowException(Exception::TypeError(String::New("First argument can't be empty")));
     String::Utf8Value fpr(args[0]->ToString());
 
@@ -317,8 +316,12 @@ Handle<Value> Sign(const Arguments& args) {
           return ThrowException(Exception::TypeError(String::New("Second argument must be a callback function")));
   }
   Local<Function> callback = Local<Function>::Cast(args[1]);
+  
 
   try{
+
+   
+
     bail(gpgme_set_keylist_mode(ctx,4), "set");
     bail(gpgme_op_keylist_start(ctx, NULL, 0), "searching keys");
    int signers=0;
