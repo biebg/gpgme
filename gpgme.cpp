@@ -15,13 +15,10 @@
 #include <errno.h>
 #include <gpgme.h>
 #include <cstring> 
-// #include "data.h"
 
 using namespace v8;
 
 using namespace node;
-
-using namespace gpgme;
 
 gpgme_ctx_t ctx;
 

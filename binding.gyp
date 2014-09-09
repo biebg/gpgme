@@ -15,15 +15,8 @@
                 ],
             }
 
-            }],
-             ["OS=='linux'", {
-               "link_settings": {
-                "libraries": [
-                    "/usr/lib64/libgpgme.so"
-                ],
-            }
-
             }]
+            
           ]
 	
   }]
