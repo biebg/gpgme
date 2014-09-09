@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <gpgme.h>
 #include <cstring> 
+#include <string.h>
 // #include "data.h"
 
 using namespace v8;
