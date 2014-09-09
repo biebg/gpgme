@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <gpgme.h>
+#include <stdio.h>
 #include <cstring> 
 
 using namespace v8;
