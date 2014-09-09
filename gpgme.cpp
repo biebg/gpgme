@@ -46,7 +46,7 @@ nonnull (const char *s)
   return s? s :"[none]";
 }
 
-char *
+void
 print_data (gpgme_data_t dh)
 {
   #define BUF_SIZE 512
