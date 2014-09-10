@@ -162,8 +162,7 @@ Handle<Value> Sign(const Arguments& args) {
 
     Local<Function> callback = Local<Function>::Cast(args[2]);
   try{
-    // printf("plain%s\n", args[1]->ToString());
-        // get the key of the signer
+
     gpgme_signers_clear(ctx);
     bail(gpgme_op_keylist_start(ctx, *pattern, 1), "searching keys");
     bail(gpgme_op_keylist_next(ctx, &key), "selecting first matched key");
@@ -220,12 +219,7 @@ Handle<Value> Sign(const Arguments& args) {
     bail(gpgme_set_keylist_mode(ctx,4), "set mode");
     bail(gpgme_op_keylist_start (ctx, NULL,0), "op KeyList start");
     while (!(err = gpgme_op_keylist_next(ctx, &key))){
-       // printf("userId:%s\n", key->uids->uid);
-       // printf ("keyid: %s  (fpr: %s)\n",
-                // key->subkeys?  nonnull(key->subkeys->keyid):"?",
-                // key->subkeys?nonnull (key->subkeys->fpr):"?");
        if(strcmp(key->subkeys->fpr,*fpr)==0 || strcmp(key->subkeys->keyid,*fpr)==0) {
-        // printf("SUCCESS\n%s\n%s\n","SUCCESS","SUCCESS");
         keyarray[keyidx++] = key;
        }
     }
@@ -335,7 +329,6 @@ Handle<Value> Sign(const Arguments& args) {
   Handle<v8::Array> signerArr = v8::Array::New(signers);
   for(int h=0;h<signers;h++) {
      signerArr->Set(h, v8::String::New(tempSigner[h]));
-     printf("temp%s\n", tempSigner[h]);
   }
   
 
