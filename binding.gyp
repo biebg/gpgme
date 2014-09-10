@@ -19,7 +19,7 @@
             ["OS=='linux'", {
                "link_settings": {
                 "libraries": [
-                    "/usr/lib/libgpgme.so"
+                    "/usr/lib64/libgpgme.so"
                 ]
             }
             }]
