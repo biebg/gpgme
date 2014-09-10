@@ -73,9 +73,7 @@ gpgme_error_t err;
   gpgme_set_locale (NULL, LC_MESSAGES, setlocale (LC_MESSAGES, NULL));
 #endif
   err = gpgme_engine_check_version (protocol);
-  // printf("%s\n","109" );
   bail(err, "engine init");
-  // printf("%s\n","110" );
 }
 Handle<Value> Verify(const Arguments& args) {
 	HandleScope scope;
@@ -126,16 +124,13 @@ Handle<Value> Verify(const Arguments& args) {
             Local<Value>::New(Null()),
             Local<Value>::New(False())
       };
-        // 异步回调执行 callback    
       callback->Call(Context::GetCurrent()->Global(), argc, argv);
     }                               
   } catch(const char* s) {
     Local<Value> err = Exception::Error(String::New(s));
       err->ToObject()->Set(NODE_PSYMBOL("errno"), Integer::New(23));
-        // 定义回调函数的参数个数和参数数组
         const unsigned argc = 1;
         Local<Value> argv[argc] = { err };
-        // 异步回调执行 callback            
         callback->Call(Context::GetCurrent()->Global(), argc, argv);
    } 
 
@@ -173,9 +168,6 @@ Handle<Value> Sign(const Arguments& args) {
     bail(gpgme_op_keylist_start(ctx, *pattern, 1), "searching keys");
     bail(gpgme_op_keylist_next(ctx, &key), "selecting first matched key");
     bail(gpgme_op_keylist_end(ctx), "done listing keys");
-        // print key identification
-        // printf("key owned by '%s'\n",
-               // gpgme_key_get_string_attr(key, GPGME_ATTR_USERID, NULL, 0));
     gpgme_signers_add(ctx, key);
     bail(gpgme_data_new(&SIG), "memory to hold signature");
     bail(gpgme_op_sign(ctx, PLAIN, SIG, GPGME_SIG_MODE_DETACH), "signing");
@@ -189,17 +181,14 @@ Handle<Value> Sign(const Arguments& args) {
             Local<Value>::New(Null()),
             Local<Value>::New(String::New(sig))
     };
-        // 异步回调执行 callback    
     callback->Call(Context::GetCurrent()->Global(), argc, argv);
 
 
   } catch(const char* s) {
      Local<Value> err = Exception::Error(String::New(s));
       err->ToObject()->Set(NODE_PSYMBOL("errno"), Integer::New(23));
-        // 定义回调函数的参数个数和参数数组
         const unsigned argc = 1;
         Local<Value> argv[argc] = { err };
-        // 异步回调执行 callback            
         callback->Call(Context::GetCurrent()->Global(), argc, argv);
    } 
    return Undefined();
@@ -243,10 +232,8 @@ Handle<Value> Sign(const Arguments& args) {
     if(keyidx==0){
       Local<Value> err = Exception::Error(String::New("Invaild fing"));
       err->ToObject()->Set(NODE_PSYMBOL("errno"), Integer::New(23));
-        // 定义回调函数的参数个数和参数数组
         const unsigned argc = 1;
         Local<Value> argv[argc] = { err };
-        // 异步回调执行 callback            
         callback->Call(Context::GetCurrent()->Global(), argc, argv);
     } else {
 
@@ -283,7 +270,6 @@ Handle<Value> Sign(const Arguments& args) {
             Local<Value>::New(Null()),
             Local<Value>::New(String::New(result))
     };
-        // 异步回调执行 callback    
     callback->Call(Context::GetCurrent()->Global(), argc, argv);
     if (ret < 0)
       bail (gpgme_err_code_from_errno (errno), "gpgm");
@@ -291,10 +277,8 @@ Handle<Value> Sign(const Arguments& args) {
   } catch(const char* s){
        Local<Value> err = Exception::Error(String::New(s));
         err->ToObject()->Set(NODE_PSYMBOL("errno"), Integer::New(00));
-        // 定义回调函数的参数个数和参数数组
         const unsigned argc = 1;
         Local<Value> argv[argc] = { err };
-        // 异步回调执行 callback            
         callback->Call(Context::GetCurrent()->Global(), argc, argv);
   }
   return Undefined();
@@ -339,9 +323,6 @@ Handle<Value> Sign(const Arguments& args) {
                printf("signatures%s\n",signature?nonnull (signature->name):"?");
                 if(signature->keyid) {
                   tempSigner[signers] = signature->keyid;
-                  // printf("id============>%s\n", signature->keyid);
-                  // printf("name==========>%s\n", signature->name);
-                  // signerArray[signers] = (signature->keyid).c_str();
                   signers++;
             }
             }
@@ -364,15 +345,12 @@ Handle<Value> Sign(const Arguments& args) {
             Local<Value>::New(Null()),
             Local<Value>::New(signerArr)
     };
-        // 异步回调执行 callback    
     callback->Call(Context::GetCurrent()->Global(), argc, argv);
   }catch(const char* s) {
         Local<Value> err = Exception::Error(String::New(s));
         err->ToObject()->Set(NODE_PSYMBOL("errno"), Integer::New(00));
-        // 定义回调函数的参数个数和参数数组
         const unsigned argc = 1;
         Local<Value> argv[argc] = { err };
-        // 异步回调执行 callback            
         callback->Call(Context::GetCurrent()->Global(), argc, argv);
   }
   return Undefined();
