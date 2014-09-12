@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <gpg-error.h>
-#include <gpgme.h>
+#include "gpgme.h"
 #include <cstring> 
 
 using namespace v8;
@@ -136,7 +136,13 @@ Handle<Value> Verify(const Arguments& args) {
 
    return Undefined();
 }
-
+ const char *myPass(void *hook, const char *desc, void **r_hd, int prev_was_bad, int fd)
+{
+  char *sNull = "NULL";
+  const char *p;
+  p = "secret";
+return p;
+}
 Handle<Value> Sign(const Arguments& args) {
    HandleScope scope;
    gpgme_key_t key;
@@ -151,16 +157,19 @@ Handle<Value> Sign(const Arguments& args) {
       return ThrowException(Exception::TypeError(String::New("First argument must be a string indicating the signer")));
     String::Utf8Value pattern(args[0]->ToString());
 
-    if (!args[1]->IsString())
+    if(!args[1]->IsString())
+      return ThrowException(Exception::TypeError(String::New("First argument must be a string indicating the signer")));
+    String::Utf8Value mypass(args[1]->ToString());
+    if (!args[2]->IsString())
         return ThrowException(Exception::TypeError(String::New("Second argument must be a string of the data to sign")));
-    String::Utf8Value plain(args[1]->ToString());
+    String::Utf8Value plain(args[2]->ToString());
     str_to_data(&PLAIN, *plain);
-
-    if(!args[2]->IsFunction()) 
+    gpgme_set_passphrase_cb(ctx,myPass,NULL);
+    if(!args[3]->IsFunction()) 
       return ThrowException(Exception::TypeError(
             String::New("Second argument must be a callback function")));
 
-    Local<Function> callback = Local<Function>::Cast(args[2]);
+    Local<Function> callback = Local<Function>::Cast(args[3]);
   try{
 
     gpgme_signers_clear(ctx);
@@ -192,6 +201,7 @@ Handle<Value> Sign(const Arguments& args) {
    } 
    return Undefined();
  }
+
 
  Handle<Value> Export(const Arguments& args) {
   HandleScope scope;
