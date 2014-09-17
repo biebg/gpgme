@@ -293,9 +293,6 @@ Handle<Value> Sign(const Arguments& args) {
   
 
   try{
-
-   
-
     bail(gpgme_set_keylist_mode(ctx,4), "set");
     bail(gpgme_op_keylist_start(ctx, NULL, 0), "searching keys");
    int signers=0;
@@ -313,7 +310,6 @@ Handle<Value> Sign(const Arguments& args) {
           {
            int j=0;
            for(j=0,signature = uid->signatures; signature; signature=signature->next,j++) {
-               printf("signatures%s\n",signature?nonnull (signature->name):"?");
                 if(signature->keyid) {
                   tempSigner[signers] = signature->keyid;
                   signers++;
